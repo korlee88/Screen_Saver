@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          name: Screen Saver ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          body: |
+            ## Screen Saver 실행 파일
+
+            화면보호기 활성화를 방지하는 유틸리티입니다.
+
+            ### 사용법
+            1. `screen_saver.exe` 다운로드
+            2. 실행 — 9분 55초마다 자동으로 마우스 클릭
+            3. 종료하려면 마우스를 화면 모서리로 이동 (Failsafe)
+          files: |
+            screen saver/dist/screen_saver.exe
+          draft: false
+          prerelease: false
